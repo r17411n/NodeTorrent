@@ -10,7 +10,6 @@ let magnetURI = 'magnet:?xt=urn:btih:BF7B226C2130639CAC016EAF49E4E3124C93ADBE&dn
 console.log('Adding Magnet Link to NodeTorrent queue: ', magnetURI.substring(0, 120), '...');
 
 client.add(magnetURI, torrent => {
-
   let file = torrent.files.find(f => f.name.endsWith('.mp4') || f.name.endsWith('.mkv'));
 
   console.log('Torrent info hash:', torrent.infoHash);
@@ -21,13 +20,11 @@ client.add(magnetURI, torrent => {
   }
 
   let server = http.createServer((req, res) => {
-
     let range = req.headers.range;
     let fileSize = file.length;
     let mimeType = mime.getType(file.name) || 'video/mp4';
 
     if (!range) {
-
       let stream = file.createReadStream({ start, end });
 
       res.writeHead(200, {'Content-Length': fileSize, 'Content-Type': mimeType});
@@ -48,7 +45,6 @@ client.add(magnetURI, torrent => {
 
       stream.pipe(res);
     } else {
-
       let [startStr, endStr] = range.replace(/bytes=/, '').split('-');
       let start = parseInt(startStr, 10);
       let end = endStr ? parseInt(endStr, 10) : fileSize - 1;
