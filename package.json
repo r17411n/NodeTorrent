@@ -1,0 +1,12 @@
+{
+  "name": "nodetorrent",
+  "version": "1.0.0",
+  "description": "A simple Node.js application to download torrents using WebTorrent.",
+  "main": "js/torrent.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mime": "^4.1.0",
+    "webtorrent": "^2.8.4"
+  }
+}
