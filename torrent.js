@@ -5,7 +5,17 @@ import { exec } from 'child_process';
 
 let port = 8888;
 let client = new WebTorrent();
-let magnetURI = 'magnet:?xt=urn:btih:EBAC7F3065426F35F602A7B7622C74483551FA69&dn=Afterburn.2025.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2850%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce';
+let percentages = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
+let magnetURI = 'magnet:?xt=urn:btih:9A4D23FA7A824C11D8EF363EA8FAFFDFCD2D62C9&dn=Frankenstein.2025.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=http%3A%2F%2Fopen.tracker.cl%3A1337%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fexplodie.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.ololosh.space%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dump.cl%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.bittor.pw%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker-udp.gbitt.info%3A80%2Fannounce&tr=udp%3A%2F%2Fretracker01-msk-virt.corbina.net%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.free-tracker.ga%3A6969%2Fannounce&tr=udp%3A%2F%2Fns-1.x-fins.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce';
+
+if (Number.isInteger(port) === false) {
+
+  console.error('Invalid port number. Using default port 8888.');
+  port = 8888;
+} else {
+
+  console.log('Using port:', port);
+}
 
 console.log('Adding Magnet Link to play queue:',magnetURI.substring(0, 120),'...');
 
@@ -15,6 +25,7 @@ client.add(magnetURI, torrent => {
   console.log('Torrent info hash:', torrent.infoHash);
  
   if (!file) {
+
     console.error('No playable video file inside the torrent.');
     return;
   }
@@ -30,15 +41,15 @@ client.add(magnetURI, torrent => {
       let stream = file.createReadStream({ start, end });
       
       res.writeHead(200, {'Content-Length': fileSize, 'Content-Type': mimeType});
-      
-      req.on('start', () => {
-        console.log('Client connected');
-      });
+
       stream.on('error', err => {
+
         console.error('Stream Error:', err);
         res.end();
       });
+
       req.on('close', () => {
+
         stream.destroy();
         console.log('Client disconnected');
       });
@@ -58,14 +69,20 @@ client.add(magnetURI, torrent => {
         'Content-Length': chunkSize,
         'Content-Type': mimeType
       });
+
       req.on('start', () => {
+
         console.log('Client connected');
       });
+
       stream.on('error', err => {
+
         console.error('Stream error:', err);
         res.end();
       });
+
       req.on('close', () => {
+
         console.log('Client disconnected');
         stream.destroy();
       });
@@ -81,8 +98,10 @@ client.add(magnetURI, torrent => {
         let downloadSpeed = (torrent.downloadSpeed / 1024).toFixed(2);
         let speeds = `↓ ${downloadSpeed} kB/s ↑ ${uploadSpeed} kB/s`;
 
-        if (progress < 100) {
+        if (percentages.includes(progress)) {
+
           if (typeof seeders === 'undefined') {
+
             seeders = 0;
           }
           console.log(`Progress: ${progress}% - Speed: ${speeds}`);
@@ -100,11 +119,13 @@ client.add(magnetURI, torrent => {
     console.log('Launching VLC player...');
 
     exec(`vlc --network-caching=1000 http://localhost:${port}`, err => {
+
       if (err) {
         console.error('Failed to launch VLC:', err);
       } else {
         console.log('VLC player closed');
       }
+
     });
   });
 });
