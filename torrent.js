@@ -88,15 +88,15 @@ client.add(magnetURI, torrent => {
         let downloadSpeed = (torrent.downloadSpeed / 1024).toFixed(2);
         let speeds = `↓ ${downloadSpeed} kB/s ↑ ${uploadSpeed} kB/s`;
 
-        if (percentages.includes(progress)) {
+        if ((torrent.progress).toFixed(0) === 1) { 
 
-          if (typeof seeders === 'undefined') {
-            seeders = 0;
-          }
+          if (typeof seeders === 'undefined') seeders = 0;
+          
           console.log(`Progress: ${progress}% - Speed: ${speeds}`);
           console.log(`Uploaded: ${(uploaded/1024).toFixed(2)} MB - Downloaded: ${(downloaded/1024).toFixed(2)} MB - Ratio: ${ratio} - Peers: ${peers}`);
-        }
+        } 
       });
+
       stream.pipe(res);
     }
   });
